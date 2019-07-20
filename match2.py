@@ -69,8 +69,10 @@ df = df[(True ^ df['sex'].isin(
 df = df[(True ^ df['smoker_status'].isin(
     [',', ',,', '.', '11', '>', '>??', 'N?A', '_', '__', 'non>', 'quit?', '���', '?', '??']))]
 
+
 ###根据前面的dic替换英文单词表示的数字
 df.replace(age_dic, inplace=True)
+df['age'] = df['age'].astype(float).fillna(-1)
 df.replace(smoke_dic, inplace=True)
 df.replace(sex_dic, inplace=True)
 
@@ -114,24 +116,33 @@ df.replace(job_num_dic, inplace=True)
 # 删除stroke_in_2018 的空格
 df['stroke_in_2018'] = df['stroke_in_2018'].str.strip()
 df = df[(True ^ df['stroke_in_2018'].isin([',', '.', '', '?', 'nuLL', 'N?A']))]
+df['stroke_in_2018'] = df['stroke_in_2018'].astype(float).fillna(-1)
 
 df = df[(True ^ df['BMI'].isin([',', '?', 'nuLL', 'N?A']))]
-
+df['BMI'] = df['BMI'].astype(float).fillna(-1)
 df['heart_condition_detected_2017'] = df['heart_condition_detected_2017'].str.strip()
-df = df[(True ^ df['heart_condition_detected_2017'].isin(['.', '?', 'n.a', 'N?A']))]
+
+df = df[(True ^ df['heart_condition_detected_2017'].isin(['.', '?', 'n.a', 'N?A', 'nan']))]
+df['heart_condition_detected_2017'] = df['heart_condition_detected_2017'].astype(float).fillna(-1)
 df['high_BP'] = df['high_BP'].str.strip()
 df = df[(True ^ df['high_BP'].isin([',', '.,', '', '?', 'nuLL', 'N?A']))]
+df['high_BP'] = df['high_BP'].astype(float).fillna(-1)
 
 df['TreatmentD'] = df['TreatmentD'].str.strip()
-df = df[(True ^ df['TreatmentD'].isin(['0+E1860:E1868', '.', '', '?', 'nuLL', 'N?A']))]
 
+df = df[(True ^ df['TreatmentD'].isin(['0+E1860:E1868', '.', '', '?', 'nuLL', 'N?A', 'nan']))]
+df['TreatmentD'] = df['TreatmentD'].astype(float)
+df = df[(True ^ df['TreatmentD'].isin(['0+E1860:E1868', '.', '', '?', 'nuLL', 'N?A', 'nan']))]
+df['TreatmentD'] = df['TreatmentD'].fillna(2)
+df['TreatmentA'] = df['TreatmentA'].fillna(2)
+df['TreatmentB'] = df['TreatmentB'].fillna(2)
+df['TreatmentC'] = df['TreatmentC'].fillna(2)
+print(np.where(np.isnan(df['age'])))
 df['married'] = df['married'].str.strip()
 df = df[(True ^ df['married'].isin([',', '.,', '', '?', 'nuLL', 'N?A', '.', 11, '11']))]
 
-
-
-byage = df.groupby("heart_condition_detected_2017")
-print(byage["heart_condition_detected_2017"].describe())
+byage = df.groupby("married")
+print(byage["married"].describe())
 df.to_csv('dataclean.csv')
 # bysex = df.groupby("sex")
 # print(bysex["sex"].describe())
